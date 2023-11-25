@@ -1,40 +1,22 @@
-# New York City Taxi Data Processing with Spark
+# Airbnb Data Pipelines using Airflow and DBT 
 
 ## Author
 Name: Simon Lim
 
 ## Description
-- The New York City Taxi and Limousine Commission (TLC) is the agency responsible for 
-regulating and managing New York City’s taxi cabs. TLC regularly records millions of trips 
-information from both yellow and green taxi cabs, including pick-up and drop-off 
-dates/times, locations, trip distances, payment types and total amount etc. While yellow 
-taxi cabs are the iconic taxi vehicles, which can pick up passengers anywhere in the city, 
-green taxi cabs can only pick up passengers in certain designated areas.
-- In this regard, the objective of the project is to analyse a large dataset and obtain 
-meaningful outcomes using Spark in Databricks. The procedure of the project includes data 
-ingestion and preparation, data transformation and analysis and finally training a Machine 
-Learning algorithm for predicting total amount of trips. In this project, Databricks is a main 
-platform used to perform data preparation, cleaning and machine learning.
+- Airbnb is an online-based marketing company that provides services to people seeking accommodation (Airbnb guests) to people looking for renting their properties (Airbnb hosts). Airbnb offers a variety of the rental property’s options, including apartments, homes, boats, townhouses or private rooms. While Airbnb records millions of various information in 191 countries, including density of rentals across regions, price variations across rentals and host-guest interactions (e.g., number of reviews). In this project, only data in Sydney are used with specific date range from May 2020 to April 2021.
+- In addition, the Census of Population and Housing (Census) is Australia’s largest statistical data collection that is undertaken and managed by the Australian Bureau of Statistics (ABS). Census aims at accurately collecting data regarding the key characteristics of Australians in each region. The data of key characteristics generated from Census will be used along with Airbnb data, in order to extract insights and further analyse and answer business questions.
+- In terms of the following contexts, the objective of the project is to build production-ready data pipelines with Airflow, Data Build Tool and Postgres SQL. The procedure of the project includes building production-ready data pipelines with Airflow, processing and cleaning data using DBT ELT pipelines, design the architecture of a data warehouse on Postgres and finally analyse and extract valuable insights. In this project, Airflow is used to load data, DBT is used to design a data warehouse and Postgres is used to analyse and answer business questions.
 
-![image](https://github.com/SimonLim03/Data-Processing-with-Databricks-Spark/assets/150989115/eb33a883-7ffc-4569-b690-7445e5eb9e0d)
+![image](https://github.com/SimonLim03/Airbnb-Data-Pipelines-with-Airflow-/assets/150989115/ffe9a7b2-8c4e-4c29-a7eb-ef0a2168d213)
+
 
 
 
 ## Presentation of Dataset
-- There are yellow and green taxi cabs datasets from 2015 to 2022 for each taxicab and they 
-are all parquet files. Each dataset contains various information of trips, including VendorID, 
-pickup_datetime, dropoff_datetime, LocationID, passenger_count, trip_distance, 
-fare_amount and total_amount etc. Also, there is a location dataset, including LocationID, 
-Borough, zone and service_zone.
-- Each 2015-2022 dataset for yellow and green taxi contains a massive amount of data and 
-therefore they have been compressed by saving them as parquet files. The total number of 
-yellow taxi trips is 663055251 and the total number of green taxi trips is 66200401. At the 
-beginning, it was assumed that a massive amount of data would considerably make a delay 
-for the processing of data cleaning, analysis and machine learning action phases. Hence, the 
-process of saving and re-loading dataframes would be essential to reduce the significant 
-processing delay.
-- In terms of datasets, parquet files are mainly used in this project, as they compress data and 
-hence be able to include a more massive amount of data.
+- There are three kinds of datasets generated from Airbnb and Census, including 12 months of Airbnb listing data for Sydney, G01(“Selected Person Characteristics by Sex”) and G02 (“Selected Medians and Averages”) Census data and lastly a dataset, containing LGAs code, LGA names and suburb names, which will help to join other datasets in later stage.
+- Airbnb listing dataset contains information, such as host_name, host_since, host_neighbouthood, listing_neighbourhood, property_type, room_type, accommodates, price, availabilities and number and scores of reviews. Perhaps, it is assumed that Airbnb listing dataset can be snapshotted into three dimensions, including host, property type and room type. Furthermore, Census tables (i.e., G01 and G02) and LGAs tables can be also used as dimensions tables.
+- Lastly, Airbnb listing dataset contains some null values and data quality issues in some columns (e.g., string values in numeric column). In this regard, it is predicted that when loading data in Airflow, wrong data type of column can potentially raise an error. Therefore, appropriate matched data type for each column would be necessary when loading data in Airflow. 
 
 
 ## Results of Analysis and Machine Learning
