@@ -33,8 +33,6 @@ Name: Simon Lim
 -	Three different dimensions from raw.listings were snapshotted with each dimension representing host, property_type and room_type. Mutually, ‘host_id’ was used as a unique key for all three snapshots and ‘scraped_date’ was used as an updated date.
 
 #### 2.2. Staging (view)
--	The goal of staging was to clean, transform and rename data from raw and snapshot. 
--	5 raw tables and 3 snapshot tables were transformed into staging views with names of stg_G01, stg_G02, stg_Host, stg_LGA, stg_listing, stg_Property, stg_room and stg_Suburb.
 - stg_G01 and stg_G02:  A column, ‘lga_code_2016’ was transformed from data format of ‘LGA*****’ to ‘*****’ using SUBSTRING function and then its column name was renamed as ‘lga_code’ with data type integer. 
 - Stg_LGA: There was no change from a raw table.
 - Stg_Suburb: All columns (‘lga_name’ and ‘suburb_name’) were in capital letters. Hence, they were appropriately changed to match the format with ‘lga_name’ in stg_LGA. Only first letter in each word was set as a capital letter and other letters were fixed as lower cases.
@@ -46,7 +44,36 @@ Name: Simon Lim
 #### 2.3. Warehouse (table)
 -	While all of dimension staging views were directly transformed into warehouse table without any change, this stage focused on a fact table, which is fact_listings. All the columns in the fact table were brought from corresponding dimension tables. Any value that was not included in corresponding dimension tables was set as a default values (i.e., ‘unknown’, 0 or ‘false’).
 - Lastly, the fact table was joined with few dimension tables, including stg_LGA (on listing_neighbourhood, host_neighbourhood = lga_name) and stg_Suburb (on host_neighbourhood = lga_name)
--	Particularly, ‘host_neighbourhood’ included values that are in either ‘lga_name’ or ‘suburb_name’. Hence, both ‘lga_name’ and ‘suburb_name’ were used to match values in ‘host_neighbourhood’. 
+-	Particularly, ‘host_neighbourhood’ included values that are in either ‘lga_name’ or ‘suburb_name’. Hence, both ‘lga_name’ and ‘suburb_name’ were used to match values in ‘host_neighbourhood’.
+
+#### 2.4. Datamart (view)
+
+##### a. Dm_listing_neighbourhood
+-	active listings 
+-	active listings rate
+-	minimum, maximum, median and average of price for active listings 
+-	superhost rate
+-	average of review scores rating for active listings
+-	percentage change for active listings
+-	percentage change for inactive listings
+-	total number of stays
+-	average estimated revenue per active listings
+
+##### b. dm_property_type
+-	active listings 
+-	active listings rate
+-	minimum, maximum, median and average of price for active listings 
+-	superhost rate
+-	average of review scores rating for active listings
+-	percentage change for active listings
+-	percentage change for inactive listings
+-	total number of stays
+-	average estimated revenue per active listings
+
+##### c. dm_host_neighbourhood
+-	number of distinct host
+-	estimated revenue
+-	estimated revenue per distinct host
 
 
 
