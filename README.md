@@ -9,6 +9,7 @@ Name: Simon Lim
 - In terms of the following contexts, the objective of the project is to build production-ready data pipelines with Airflow, Data Build Tool and Postgres SQL. The procedure of the project includes building production-ready data pipelines with Airflow, processing and cleaning data using DBT ELT pipelines, design the architecture of a data warehouse on Postgres and finally analyse and extract valuable insights. In this project, Airflow is used to load data, DBT is used to design a data warehouse and Postgres is used to analyse and answer business questions.
 
 ![image](https://github.com/SimonLim03/Airbnb-Data-Pipelines-with-Airflow-/assets/150989115/ffe9a7b2-8c4e-4c29-a7eb-ef0a2168d213)
+![image](https://github.com/SimonLim03/Airbnb-Data-Pipelines-with-Airflow-/assets/150989115/0d0e02be-0751-40b1-9975-a6f0ba8dd36e)
 
 
 
