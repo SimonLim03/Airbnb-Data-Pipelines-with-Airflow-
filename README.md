@@ -19,5 +19,34 @@ Name: Simon Lim
 - Lastly, Airbnb listing dataset contains some null values and data quality issues in some columns (e.g., string values in numeric column). In this regard, it is predicted that when loading data in Airflow, wrong data type of column can potentially raise an error. Therefore, appropriate matched data type for each column would be necessary when loading data in Airflow. 
 
 
-## Results of Analysis and Machine Learning
-- Refer to the hand-over report for outcomes of the project
+## Pipeline of the Project
+- 0. Public and private IP address were obtained and applied into Airflow (private) and Postgres (public).
+
+### 1. Data Loading into Postgres using Airflow
+- 1.	Airbnb listing dataset, LGA datasets and Census datasets were uploaded into Airflow storage bucket. 
+- 2.	A raw schema and the relevant raw tables, which represent Airbnb, Census and LGA datasets, were created on Postgres. The relevant raw tables include raw.listings, raw.nsw_lga, raw.nsw_suburb, raw.g01, raw.g02. 
+- 3.	An Airflow Dag file, that was used to read the datasets and insert the raw data into the raw schema, was created. The names of columns in raw tables on Postgres and column names in Dag file were identical with appropriate data types based on values of each column. The Dag file was then uploaded into Airflow storage bucket, which was automatically processed in Airflow and updated on Postgres.   
+
+### 2. Design a Data Warehouse using DBT
+#### 2.1. Raw/Snapshot (table)
+- Five raw tables were already created in Airflow loading stage, including raw.listings, raw.nsw_lag, raw.nsw_suburb, raw.g01, raw.g02. 
+-	Three different dimensions from raw.listings were snapshotted with each dimension representing host, property_type and room_type. Mutually, ‘host_id’ was used as a unique key for all three snapshots and ‘scraped_date’ was used as an updated date.
+
+#### 2.2. Staging (view)
+-	The goal of staging was to clean, transform and rename data from raw and snapshot. 
+-	5 raw tables and 3 snapshot tables were transformed into staging views with names of stg_G01, stg_G02, stg_Host, stg_LGA, stg_listing, stg_Property, stg_room and stg_Suburb.
+- stg_G01 and stg_G02:  A column, ‘lga_code_2016’ was transformed from data format of ‘LGA*****’ to ‘*****’ using SUBSTRING function and then its column name was renamed as ‘lga_code’ with data type integer. 
+- Stg_LGA: There was no change from a raw table.
+- Stg_Suburb: All columns (‘lga_name’ and ‘suburb_name’) were in capital letters. Hence, they were appropriately changed to match the format with ‘lga_name’ in stg_LGA. Only first letter in each word was set as a capital letter and other letters were fixed as lower cases.
+- Stg_Host: There were some null values in several columns, including ‘host_name’, ‘host_since’, ‘host_is_superhost’ and ‘host_neighbourhood’. Null values were cleaned by filling them with default values, ‘unknown’ for string values, 0 for numeric values and ‘false’ for Boolean values. Also, date columns such as ‘host_since’, ‘scraped_date’, ‘dbt_valid_from’ and ‘dbt_valid_to’ were converted to date type.  
+- Stg_Property: Some data type transformations were performed at this stage. For example, ‘price’ column was converted from varchar type to float type and ‘has_availablity’ was converted to Boolean type and ‘scraped_date’ was converted to date type. 
+- Stg_room: There were some null values in integer columns, including ‘review_scores_rating’, ‘review_scores_accuracy’, ‘review_scores_cleanliness’, ‘review_scores_checkin’, ‘review_scores_communication’ and ‘review_scores_value’. Null values were filled with 0. Also, date columns were converted to date type like other snapshots.
+- Stg_listing: This staging view included all the cleaned and transformed columns from stg_host, stg_property and stg_room. It would be used as a fact table in warehouse stage.
+
+#### 2.3. Warehouse (table)
+-	While all of dimension staging views were directly transformed into warehouse table without any change, this stage focused on a fact table, which is fact_listings. All the columns in the fact table were brought from corresponding dimension tables. Any value that was not included in corresponding dimension tables was set as a default values (i.e., ‘unknown’, 0 or ‘false’).
+- Lastly, the fact table was joined with few dimension tables, including stg_LGA (on listing_neighbourhood, host_neighbourhood = lga_name) and stg_Suburb (on host_neighbourhood = lga_name)
+-	Particularly, ‘host_neighbourhood’ included values that are in either ‘lga_name’ or ‘suburb_name’. Hence, both ‘lga_name’ and ‘suburb_name’ were used to match values in ‘host_neighbourhood’. 
+
+
+
